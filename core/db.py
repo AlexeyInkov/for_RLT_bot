@@ -1,12 +1,13 @@
 from pymongo import MongoClient
 
+from core.config import HOST, PORT, DB_NAME, COLLECTION_NAME
 from core.utils import get_date_from_str
 
 
 def get_collection():
-    client = MongoClient("localhost", 27017)
-    db = client.sampleDB
-    return db.sample_collection
+    client = MongoClient(HOST, PORT)
+    db = client[DB_NAME]
+    return db[COLLECTION_NAME]
 
 
 def get_aggregate_collection(collection, dt_from, dt_upto, labels):
