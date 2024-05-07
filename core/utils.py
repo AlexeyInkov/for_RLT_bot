@@ -1,24 +1,22 @@
-from json import JSONDecodeError
-
-from datetime import datetime, timedelta
 import calendar
 import json
+from datetime import datetime, timedelta
+from json import JSONDecodeError
 
-INPUT_MONTH = '{"dt_from": "2022-09-01T00:00:00", "dt_upto": "2022-12-30T23:59:00", "group_type": "month"}'
-INPUT_DAY = '{"dt_from": "2022-10-01T00:00:00","dt_upto": "2022-10-02T23:59:00","group_type": "day"}'
-INPUT_HOUR = '{"dt_from": "2022-02-01T00:00:00","dt_upto": "2022-02-02T00:00:00","group_type": "hour"}'
+# INPUT_MONTH = '{"dt_from": "2022-09-01T00:00:00", "dt_upto": "2022-12-30T23:59:00", "group_type": "month"}'
+# INPUT_DAY = '{"dt_from": "2022-10-01T00:00:00","dt_upto": "2022-10-02T23:59:00","group_type": "day"}'
+# INPUT_HOUR = '{"dt_from": "2022-02-01T00:00:00","dt_upto": "2022-02-02T00:00:00","group_type": "hour"}'
 
 
-def get_date_from_str(date_str):
+def get_date_from_str(date_str: str) -> datetime:
     return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S")
 
 
-def get_str_from_date(date):
+def get_str_from_date(date: datetime) -> str:
     return date.strftime("%Y-%m-%dT%H:%M:%S")
 
 
-async def check_input(input_str):
-    # input_str = INPUT_MONTH
+async def check_input(input_str: str) -> tuple[bool, str] | tuple[bool, tuple]:
     try:
         input_dict = json.loads(input_str)
     except JSONDecodeError:
@@ -44,7 +42,7 @@ async def check_input(input_str):
         return True, check
 
 
-def get_labels(dt_from, dt_upto, group_type):
+def get_labels(dt_from: datetime, dt_upto: datetime, group_type: str) -> list[str]:
     labels = []
     while dt_from <= dt_upto:
         labels.append(get_str_from_date(dt_from))
@@ -57,11 +55,12 @@ def get_labels(dt_from, dt_upto, group_type):
             dt_from += timedelta(days=days_in_month)
 
     labels.append(get_str_from_date(dt_upto + timedelta(seconds=1)))
-    print(labels)  # TODO Убрать
     return labels
 
 
-def get_dataset(aggregate_collection, dt_from, labels):
+def get_dataset(
+    aggregate_collection, dt_from: datetime, labels: list[str]
+) -> list[int]:
     answer_dict = dict()
     for item in aggregate_collection:
         answer_dict[get_str_from_date(dt_from + timedelta(seconds=item["_id"]))] = item[
