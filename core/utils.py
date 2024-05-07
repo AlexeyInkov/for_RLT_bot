@@ -18,7 +18,7 @@ def get_str_from_date(date):
 
 
 async def check_input(input_str):
-    input_str = INPUT_MONTH  # TODO удалить
+    # input_str = INPUT_MONTH
     try:
         input_dict = json.loads(input_str)
     except JSONDecodeError:
@@ -59,3 +59,12 @@ def get_labels(dt_from, dt_upto, group_type):
     labels.append(get_str_from_date(dt_upto + timedelta(seconds=1)))
     print(labels)  # TODO Убрать
     return labels
+
+
+def get_dataset(aggregate_collection, dt_from, labels):
+    answer_dict = dict()
+    for item in aggregate_collection:
+        answer_dict[get_str_from_date(dt_from + timedelta(seconds=item["_id"]))] = item[
+            "total"
+        ]
+    return [answer_dict.get(key, 0) for key in labels[:-1]]
